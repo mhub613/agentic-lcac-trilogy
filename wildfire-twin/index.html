@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CanopyPulse Wildfire Digital Twin (DDS + LCAC) | Port 8085</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand-title">
+      <h1>
+        🔥 CanopyPulse: Wildfire Early-Warning &amp; Self-Healing WSN Digital Twin
+        <span class="badge-fire">Real-World Terrain &amp; Hazard Simulation · Port 8085</span>
+      </h1>
+      <div class="brand-subtitle">
+        Trilogy Navigation:
+        <a href="http://localhost:8080/" target="_blank" rel="noopener" style="color:#38bdf8;">SimA: 2012 NetLogo (:8080)</a> ·
+        <strong style="color:#fb923c;">🔥 SimB: Wildfire Twin (:8085)</strong> ·
+        <a href="http://localhost:8090/" target="_blank" rel="noopener" style="color:#c084fc;font-weight:700;">🤖 SimC: Google ADK Agentic (:8090)</a>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button id="btn-reset" class="btn btn-primary">⟳ RESET FOREST</button>
+      <button id="btn-run" class="btn btn-fire">▶ RUN EMERGENCY SIM</button>
+      <button id="btn-step" class="btn">⏭ STEP 1 TICK</button>
+    </div>
+  </header>
+
+  <main class="main-grid">
+
+    <!-- LEFT SIDEBAR: Wildfire & Mesh Controls -->
+    <aside class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Wildfire &amp; RF Controls</span>
+        <span style="font-size:0.68rem;color:#86efac;">40km × 40km</span>
+      </div>
+
+      <div class="control-section">
+        <div class="section-label">1. Emergency Scenario Presets</div>
+        <div class="tool-grid">
+          <button class="btn btn-xs" data-scenario="LIGHTNING_NW">⚡ NW Ridge Strike</button>
+          <button class="btn btn-xs" data-scenario="PINCER_CANYON">🔥 Dual Canyon Fire</button>
+          <button class="btn btn-xs" data-scenario="HUB_ASSASSINATION" style="grid-column: 1 / -1;">💥 Targeted Sector-Hub Burnout Test</button>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <div class="section-label">2. Interactive Map Click Tools</div>
+        <div class="tool-grid">
+          <button class="btn btn-xs btn-tool active" data-tool="IGNITE">🔥 Ignite Fire</button>
+          <button class="btn btn-xs btn-tool" data-tool="RETARDANT">💧 Drop Retardant</button>
+          <button class="btn btn-xs btn-tool" data-tool="AIRDROP">🪂 Air-Drop Motes</button>
+          <button class="btn btn-xs btn-tool" data-tool="RIDGE">⛰️ Add Granite Ridge</button>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <div class="section-label">3. Wind &amp; Fire Front Physics</div>
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">Wind Speed</span>
+            <span id="val-wind-speed" class="control-val">28 km/h</span>
+          </div>
+          <input id="ctrl-wind-speed" type="range" min="0" max="80" step="4" value="28" />
+        </div>
+
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">Wind Direction</span>
+            <span id="val-wind-dir" class="control-val">38° (SE)</span>
+          </div>
+          <input id="ctrl-wind-dir" type="range" min="0" max="360" step="5" value="38" />
+        </div>
+
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">Fire Spread Rate</span>
+            <span id="val-spread" class="control-val">1.2x</span>
+          </div>
+          <input id="ctrl-spread" type="range" min="0.4" max="2.5" step="0.2" value="1.2" />
+        </div>
+      </div>
+
+      <div class="control-section">
+        <div class="section-label">4. Sensor Deployment &amp; UDG</div>
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">Sensors per Sector (k)</span>
+            <span id="val-nodes" class="control-val">160</span>
+          </div>
+          <input id="ctrl-nodes" type="range" min="80" max="260" step="20" value="160" />
+        </div>
+
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">Radio Range (r)</span>
+            <span id="val-radius" class="control-val">4.5 km</span>
+          </div>
+          <input id="ctrl-radius" type="range" min="2.5" max="6.5" step="0.5" value="4.5" />
+        </div>
+
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">min_Delta (l)</span>
+            <span id="val-delta" class="control-val">4</span>
+          </div>
+          <input id="ctrl-delta" type="range" min="2" max="8" step="1" value="4" />
+        </div>
+      </div>
+
+      <div class="control-section">
+        <div class="section-label">5. Resilience &amp; Terrain Features</div>
+        <label class="toggle-row">
+          <span>Smart Cross-Sector Routing</span>
+          <input id="chk-cross-tile" type="checkbox" checked />
+        </label>
+        <label class="toggle-row">
+          <span>AI-DDS Adaptive Power Boost</span>
+          <input id="chk-ai-dds" type="checkbox" checked />
+        </label>
+        <label class="toggle-row">
+          <span>Granite Ridge RF Shadowing</span>
+          <input id="chk-terrain" type="checkbox" checked />
+        </label>
+      </div>
+    </aside>
+
+    <!-- CENTER ARENA: Topographic Forest Canvases + Mission KPIs -->
+    <section class="arena-container">
+
+      <div class="mission-banner-grid">
+        <div class="mission-pill">
+          <div class="mission-pill-title">1. Smoke &amp; Heat Plume</div>
+          <div class="mission-pill-desc">Sensors &gt;48°C switch to 92% urgent TX rate</div>
+        </div>
+        <div class="mission-pill">
+          <div class="mission-pill-title">2. Thermal Burnout</div>
+          <div class="mission-pill-desc">Flame core (&gt;300°C) destroys motes</div>
+        </div>
+        <div class="mission-pill">
+          <div class="mission-pill-title">3. Granite RF Ridges</div>
+          <div class="mission-pill-desc">Blocks direct line-of-sight RF links</div>
+        </div>
+        <div class="mission-pill">
+          <div class="mission-pill-title">4. 1-Tick Self-Healing</div>
+          <div class="mission-pill-desc">DDS promotes surviving upwind hubs</div>
+        </div>
+      </div>
+
+      <div class="canvases-grid">
+        <div class="sim-card">
+          <div class="sim-card-header">
+            <div class="sim-card-title">
+              <span class="dot" style="background:#10b981;box-shadow:0 0 6px #10b981;"></span>
+              DDS + LCAC Self-Healing Wildfire Mesh
+            </div>
+            <span class="badge-fire" style="color:#6ee7b7;border-color:rgba(16,185,129,0.5);background:rgba(16,185,129,0.15);">Zero Orphaned Sectors</span>
+          </div>
+          <div class="canvas-wrapper">
+            <canvas id="canvas-lcac"></canvas>
+          </div>
+        </div>
+
+        <div class="sim-card">
+          <div class="sim-card-header">
+            <div class="sim-card-title">
+              <span class="dot" style="background:#ef4444;box-shadow:0 0 6px #ef4444;"></span>
+              Static WIRES Baseline (Fixed Routing Tree)
+            </div>
+            <span class="badge-fire">Burned Hub = Blind Sector</span>
+          </div>
+          <div class="canvas-wrapper">
+            <canvas id="canvas-wires"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend-bar">
+        <span class="legend-item"><span class="dot" style="background:#facc15;"></span> Yellow: Canopy Sensor</span>
+        <span class="legend-item"><span class="dot" style="background:#38bdf8;"></span> Cyan: Dominant Relay</span>
+        <span class="legend-item"><span class="dot" style="background:#fb923c;"></span> Orange: Sector Hub</span>
+        <span class="legend-item"><span class="dot" style="background:#10b981;"></span> Green: Fire Command Tower</span>
+        <span class="legend-item"><span class="dot" style="background:#ef4444;"></span> Red Ring: Cut-Off / Orphaned</span>
+        <span class="legend-item"><span class="dot" style="background:#7f1d1d;"></span> Dark Red: Burned by Fire</span>
+        <span class="legend-item"><span class="dot" style="background:#94a3b8;"></span> Grey Bar: Granite Ridge</span>
+      </div>
+
+      <div class="kpi-strip">
+        <div class="kpi-box">
+          <div class="kpi-label">MISSION TIME (TICKS)</div>
+          <div id="kpi-round" class="kpi-value" style="color:#fff;">0</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">FIRE ALERTS DELIVERED (LCAC vs WIRES)</div>
+          <div id="kpi-alerts" class="kpi-value" style="color:#fb923c;">0 vs 0</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">CONNECTED SENSORS (LCAC vs WIRES)</div>
+          <div id="kpi-functional" class="kpi-value" style="color:#10b981;">640 vs 640</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">ORPHANED LIVE SENSORS (LCAC vs WIRES)</div>
+          <div id="kpi-orphaned" class="kpi-value" style="color:#ef4444;">0 vs 0 cut off</div>
+        </div>
+      </div>
+
+      <div id="status-banner" class="status-banner">
+        Ready. Click "▶ RUN EMERGENCY SIM" or click directly on either forest map to ignite fires or drop water-bomber retardant!
+      </div>
+    </section>
+
+    <!-- RIGHT SIDEBAR: 4 Mission-Critical Telemetry Charts -->
+    <aside class="panel charts-sidebar">
+      <div class="panel-header">
+        <span class="panel-title">Emergency Telemetry</span>
+        <div style="font-size:0.68rem;display:flex;gap:8px;">
+          <span style="color:#10b981;font-weight:700;">■ DDS+LCAC</span>
+          <span style="color:#ef4444;font-weight:700;">■ WIRES</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span>(a) Cumulative Wildfire Alerts Delivered</span>
+        </div>
+        <canvas id="chart-alerts" class="chart-canvas"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span>(b) Connected Reporting Sensors</span>
+        </div>
+        <canvas id="chart-functional" class="chart-canvas"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span>(c) Average Network Battery (%)</span>
+        </div>
+        <canvas id="chart-battery" class="chart-canvas"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span>(d) Collisions Saved vs. WIRES Alerts Lost</span>
+        </div>
+        <canvas id="chart-drops" class="chart-canvas"></canvas>
+      </div>
+    </aside>
+
+  </main>
+
+  <script src="wildfire-engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

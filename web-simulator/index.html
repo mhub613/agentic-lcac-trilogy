@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DDS + LCAC Wireless Sensor Network Simulator | Muhuji Mshana (2012 Carleton Thesis)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="app-header">
+    <div class="brand-title">
+      <h1>
+        Dynamic Energy Aware Aggregate Convergecast (DDS + LCAC)
+        <span class="badge">Carleton University 2012 → 2026 Interactive Revival</span>
+      </h1>
+      <div class="brand-subtitle">
+        Trilogy Navigation:
+        <strong style="color:#38bdf8;">SimA: 2012 NetLogo (:8080)</strong> ·
+        <a href="http://localhost:8085/" target="_blank" rel="noopener" style="color:#fb923c;font-weight:700;">🔥 SimB: Wildfire Twin (:8085)</a> ·
+        <a href="http://localhost:8090/" target="_blank" rel="noopener" style="color:#c084fc;font-weight:700;">🤖 SimC: Google ADK Agentic (:8090)</a> ·
+        <a href="https://carleton.scholaris.ca/items/2f83b153-fbd1-4eb2-a899-78365beb5f96" target="_blank" rel="noopener">Carleton Thesis PDF</a>
+      </div>
+    </div>
+
+    <!-- NetLogo Action Buttons (Section 6.2.1: SETUP | SIMULATE | SIMULATE ONCE!) -->
+    <div class="header-actions">
+      <button id="btn-setup" class="btn btn-success" title="Reset & randomly distribute nodes across the 4 tiles">
+        ⟳ SETUP
+      </button>
+      <button id="btn-simulate" class="btn btn-primary" title="Run Algorithm 5.3 continuously">
+        ▶ SIMULATE (CONTINUOUS)
+      </button>
+      <button id="btn-step" class="btn" title="Execute exactly 1 convergecast cycle (DDS + LCAC)">
+        ⏭ SIMULATE ONCE!
+      </button>
+      <button id="btn-export-csv" class="btn" title="Download full round-by-round telemetry CSV">
+        ⬇ Export CSV
+      </button>
+    </div>
+  </header>
+
+  <!-- 3-Column Workspace (Left: Figure 8 Controls | Center: Dual 4-Tile World | Right: Figures 14-22 Live Charts) -->
+  <main class="main-grid">
+
+    <!-- LEFT SIDEBAR: All 10 NetLogo Controls (Thesis Figure 8, pp. 64-65) + Presets + Future Work -->
+    <aside class="panel">
+      <div class="panel-header">
+        <span class="panel-title">NetLogo Control Panel (Fig. 8)</span>
+        <span style="font-size:0.7rem;color:#94a3b8;">10 Parameters</span>
+      </div>
+
+      <!-- Sliders 1-3 & 8-10 -->
+      <div class="control-section">
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">1. tile_size</span>
+            <span id="val-tile-size" class="control-val">20</span>
+          </div>
+          <input id="ctrl-tile-size" type="range" min="12" max="30" step="2" value="20" />
+        </div>
+
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">2. nodes-per-tile (k)</span>
+            <span id="val-nodes-per-tile" class="control-val">200</span>
+          </div>
+          <input id="ctrl-nodes-per-tile" type="range" min="50" max="350" step="25" value="200" />
+        </div>
+
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">3. Neighbor-degree-distance (r)</span>
+            <span id="val-neighbor-radius" class="control-val">4</span>
+          </div>
+          <input id="ctrl-neighbor-radius" type="range" min="2" max="6" step="0.5" value="4" />
+        </div>
+
+        <div class="num-inputs-grid">
+          <div class="num-input-box">
+            <label for="ctrl-initial-energy">4. Initial_Energy</label>
+            <input id="ctrl-initial-energy" type="number" value="1000" min="200" max="5000" step="100" />
+          </div>
+          <div class="num-input-box">
+            <label for="ctrl-tx-energy">5. Energy_per_tx</label>
+            <input id="ctrl-tx-energy" type="number" value="30" min="5" max="100" step="5" />
+          </div>
+        </div>
+
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">6. Dominant_energy_Threshold</span>
+            <span id="val-dom-energy" class="control-val">450</span>
+          </div>
+          <input id="ctrl-dom-energy" type="range" min="100" max="800" step="50" value="450" />
+        </div>
+
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">7. Alive_Energy_Threshold</span>
+            <span id="val-alive-energy" class="control-val">30</span>
+          </div>
+          <input id="ctrl-alive-energy" type="range" min="0" max="120" step="10" value="30" />
+        </div>
+
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">8. min_Delta (l)</span>
+            <span id="val-min-delta" class="control-val">5</span>
+          </div>
+          <input id="ctrl-min-delta" type="range" min="2" max="10" step="1" value="5" />
+        </div>
+
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">9. Transmission-factor</span>
+            <span id="val-tx-factor" class="control-val">0.35</span>
+          </div>
+          <input id="ctrl-tx-factor" type="range" min="0.05" max="0.90" step="0.05" value="0.35" />
+        </div>
+
+        <div class="control-item">
+          <div class="control-label-row">
+            <span class="control-name">10. Dominant_per_neighborhood</span>
+            <span id="val-dom-neighborhood" class="control-val">3</span>
+          </div>
+          <input id="ctrl-dom-neighborhood" type="range" min="1" max="6" step="1" value="3" />
+        </div>
+      </div>
+
+      <!-- 2012 Thesis Chapter 7.1 Future Work Extensions -->
+      <div class="control-section">
+        <div class="section-label">Chapter 7.1 Future Work Extensions</div>
+        <label class="toggle-row" title="Future Work #3 (p. 93): Allow boundary leaf sensors to attach to closer dominants in adjacent tiles">
+          <span>#3 Smart Cross-Tile Routing</span>
+          <input id="chk-cross-tile" type="checkbox" checked />
+        </label>
+        <label class="toggle-row" title="Future Work #2 (p. 93): Mobile sensor nodes (VANET) with velocity-aware DDS dominant election">
+          <span>#2 Mobile Nodes (VANET Mode)</span>
+          <input id="chk-mobility" type="checkbox" />
+        </label>
+        <label class="toggle-row" title="Future Work #1 (p. 93): Physical SINR path-loss & interactive RF jamming zones">
+          <span>#1 Physical SINR / RF Jamming</span>
+          <input id="chk-sinr" type="checkbox" />
+        </label>
+      </div>
+
+      <!-- God Mode Canvas Click Tools -->
+      <div class="control-section">
+        <div class="section-label">Interactive Canvas Click Mode ("God Mode")</div>
+        <div class="god-mode-bar">
+          <button class="btn btn-xs btn-tool active" data-godtool="INSPECT">🔍 Inspect UDG</button>
+          <button class="btn btn-xs btn-tool" data-godtool="JAMMER">📡 Drop RF Jammer</button>
+          <button class="btn btn-xs btn-tool" data-godtool="DRAIN">⚡ Drain Battery</button>
+          <button class="btn btn-xs btn-tool" data-godtool="AIRDROP">🪂 Air-Drop Nodes</button>
+        </div>
+      </div>
+
+      <!-- Thesis Tables 2 & 3 Quick Presets -->
+      <div class="control-section">
+        <div class="section-label">2012 Thesis Benchmark Presets (Tables 2 & 3)</div>
+        <div class="preset-grid">
+          <button class="btn btn-xs" data-preset="T2_100">Table 2: k=100</button>
+          <button class="btn btn-xs" data-preset="T2_200">Table 2: k=200</button>
+          <button class="btn btn-xs" data-preset="T2_250">Table 2: k=250</button>
+          <button class="btn btn-xs" data-preset="T3_R2">Table 3: r=2</button>
+          <button class="btn btn-xs" data-preset="T3_R5">Table 3: r=5</button>
+          <button class="btn btn-xs" data-preset="T3_R6">Table 3: r=6</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER ARENA: 5-Stage System Flow + Side-by-Side DDS+LCAC vs. Static WIRES -->
+    <section class="arena-container">
+
+      <!-- 5-Stage System Flow Stepper (Click any stage to isolate/inspect) -->
+      <div class="stage-stepper">
+        <div class="stage-pill" data-stage="1">
+          <div class="stage-num">Stage 1 · Alg 5.3</div>
+          <div class="stage-name">UDG Discovery</div>
+          <div class="stage-desc">Broadcast E_v &amp; Δ_v within r</div>
+        </div>
+        <div class="stage-pill" data-stage="2">
+          <div class="stage-num">Stage 2 · Alg 4.1</div>
+          <div class="stage-name">DDS Tree O(N²)</div>
+          <div class="stage-desc">Elect Blue CDS &amp; Orange Sink</div>
+        </div>
+        <div class="stage-pill" data-stage="3">
+          <div class="stage-num">Stage 3 · Alg 5.2</div>
+          <div class="stage-name">Dual Semaphores</div>
+          <div class="stage-desc">local &amp; parent_semaphore</div>
+        </div>
+        <div class="stage-pill" data-stage="4">
+          <div class="stage-num">Stage 4 · Alg 5.1</div>
+          <div class="stage-name">LCAC Funnel O(N)</div>
+          <div class="stage-desc">3-Tier In-Network Aggregation</div>
+        </div>
+        <div class="stage-pill" data-stage="5">
+          <div class="stage-num">Stage 5 · Dynamic</div>
+          <div class="stage-name">Self-Healing Rotation</div>
+          <div class="stage-desc">Tired relays demote to leaves</div>
+        </div>
+      </div>
+
+      <!-- Dual Canvases: DDS + LCAC (Left) vs. Static WIRES Baseline (Right) -->
+      <div class="canvases-grid">
+        <div class="sim-card">
+          <div class="sim-card-header">
+            <div class="sim-card-title">
+              <span class="dot dot-blue"></span>
+              DDS + LCAC (Dynamic Tree + Dual Semaphore Model)
+            </div>
+            <span class="badge">O(N²) Tree · O(N) Convergecast</span>
+          </div>
+          <div class="canvas-wrapper">
+            <canvas id="canvas-lcac"></canvas>
+          </div>
+        </div>
+
+        <div class="sim-card">
+          <div class="sim-card-header">
+            <div class="sim-card-title">
+              <span class="dot dot-red"></span>
+              Static WIRES Baseline (Malhotra et al., 2011)
+            </div>
+            <span class="badge" style="color:#fda4af;border-color:rgba(244,63,94,0.4);background:rgba(244,63,94,0.12);">Static BSPT Tree</span>
+          </div>
+          <div class="canvas-wrapper">
+            <canvas id="canvas-wires"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend & Live Comparison KPIs -->
+      <div class="legend-bar">
+        <div class="legend-items">
+          <span class="legend-item"><span class="dot dot-yellow"></span> Yellow: LeafSet Sensor</span>
+          <span class="legend-item"><span class="dot dot-blue"></span> Blue: Dominant (CDS)</span>
+          <span class="legend-item"><span class="dot dot-orange"></span> Orange: Tile Sink (G_D)</span>
+          <span class="legend-item"><span class="dot dot-green"></span> Green: Global Sink (0,0)</span>
+          <span class="legend-item"><span class="dot dot-red"></span> Red Ring: Semaphore Lock / Collision</span>
+          <span class="legend-item"><span class="dot dot-dead"></span> Grey: Exhausted (Dead)</span>
+        </div>
+      </div>
+
+      <div class="kpi-strip">
+        <div class="kpi-box">
+          <div class="kpi-label">CONVERGECAST ROUND (TICK)</div>
+          <div id="kpi-round" class="kpi-value" style="color:#f8fafc;">0</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">AVG ENERGY (LCAC vs. WIRES)</div>
+          <div id="kpi-lcac-energy" class="kpi-value" style="color:#38bdf8;">1000 / 1000</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">NODES ALIVE (LCAC vs. WIRES)</div>
+          <div id="kpi-lcac-alive" class="kpi-value" style="color:#22c55e;">800 / 800</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">SEMAPHORE SAVED vs. WIRES HIT</div>
+          <div id="kpi-lcac-avoided" class="kpi-value" style="color:#facc15;">0 saved / 0 hit</div>
+        </div>
+      </div>
+
+      <div id="status-banner" class="status-banner">
+        Ready. Click "▶ SIMULATE" to run continuous convergecast rounds, or click directly on either canvas to use God Mode tools.
+      </div>
+    </section>
+
+    <!-- RIGHT SIDEBAR: 4 Live Synchronized Plots (Matching Thesis Figures 14-22 a, b, c, d) -->
+    <aside class="panel charts-sidebar">
+      <div class="panel-header">
+        <span class="panel-title">Live Telemetry (Figs. 14–22)</span>
+        <div class="chart-legend">
+          <span style="color:#38bdf8;font-weight:700;">■ LCAC</span>
+          <span style="color:#f43f5e;font-weight:700;">■ WIRES</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span>(a) Average Residual Energy (Units)</span>
+        </div>
+        <canvas id="chart-energy" class="chart-canvas"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span>(b) Average Nodes Alive</span>
+        </div>
+        <canvas id="chart-alive" class="chart-canvas"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span>(c) Transmitting Nodes per Round</span>
+        </div>
+        <canvas id="chart-tx" class="chart-canvas"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span>(d) Avoided (LCAC) vs. Collided (WIRES)</span>
+        </div>
+        <canvas id="chart-collision" class="chart-canvas"></canvas>
+      </div>
+    </aside>
+
+  </main>
+
+  <script src="sim-engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

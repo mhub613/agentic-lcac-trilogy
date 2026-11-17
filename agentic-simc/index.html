@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SimC: CanopyPulse Agentic AI-DDS + Token Economy | Port 8090</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Top Header with Trilogy Navigation -->
+  <header class="app-header">
+    <div class="brand-title">
+      <h1>
+        🌿 SimC: CanopyPulse Agentic AI-DDS (Amazon Rainforest &amp; Wildfire ADK Swarm)
+        <span class="badge-adk">Google ADK + Token Economy Profiler · Port 8090</span>
+      </h1>
+      <div class="brand-subtitle">
+        Trilogy Navigation:
+        <a href="http://localhost:8080/" target="_blank" rel="noopener">SimA: 2012 NetLogo (:8080)</a> ·
+        <a href="http://localhost:8085/" target="_blank" rel="noopener" style="color:#fb923c;">SimB: Wildfire Twin (:8085)</a> ·
+        <strong style="color:#6ee7b7;">SimC: CanopyPulse ADK Agentic (:8090)</strong>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button id="btn-reset" class="btn">⟳ RESET CANOPY</button>
+      <button id="btn-run" class="btn btn-adk">▶ RUN ADK SWARM</button>
+      <button id="btn-step" class="btn">⏭ STEP 1 ROUND</button>
+      <button id="btn-chaos" class="btn" style="border-color:#fb923c;color:#fed7aa;">🔥 Ignite Canopy Fire</button>
+    </div>
+  </header>
+
+  <!-- Agentic UI Feature 1: Natural-Language Mission Commander Bar + Live Gemini API Controls -->
+  <div class="commander-bar">
+    <div class="commander-left">
+      <span class="commander-label">🗣️ Commander:</span>
+      <button class="intent-pill active" data-intent="BALANCED">⚖️ Balanced Auto-Pilot</button>
+      <button class="intent-pill" data-intent="ECO_HIBERNATE">🌿 Eco-Hibernate (300+ Rnds)</button>
+      <button class="intent-pill" data-intent="WILDFIRE_ALERT">🔥 Canopy Wildfire Alert</button>
+      <button class="intent-pill" data-intent="TOKEN_SAVER">💰 Event-Only Budget</button>
+    </div>
+
+    <div class="commander-input-group">
+      <input
+        id="inp-commander"
+        class="commander-input"
+        type="text"
+        placeholder="Command GlobalSinkAgent (e.g. 'Save battery in Várzea' or 'Boost range for fire')..."
+      />
+      <button id="btn-send-cmd" class="btn btn-adk" style="padding:5px 9px;">Send Intent</button>
+    </div>
+
+    <!-- Live Gemini Model Orchestrator Controls -->
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+      <select id="sel-gemini-model" class="cadence-select" style="border-color:#c084fc;color:#e9d5ff;font-weight:600;">
+        <option value="gemini-3.8-flash" selected>Model: gemini-3.8-flash</option>
+        <option value="gemini-3.5-flash-lite">Model: gemini-3.5-flash-lite</option>
+        <option value="gemini-3.5-flash">Model: gemini-3.5-flash</option>
+        <option value="gemini-4-hydrogen">Model: gemini-4-hydrogen</option>
+        <option value="gemini-4-argon">Model: gemini-4-argon</option>
+        <option value="gemini-4-carbon">Model: gemini-4-carbon</option>
+      </select>
+      <input
+        id="inp-gemini-key"
+        class="commander-input"
+        type="password"
+        placeholder="🔑 Paste Gemini API Key (or set in .env)"
+        style="width:210px;border-color:rgba(192,132,252,0.5);"
+      />
+      <button id="btn-live-gemini" class="btn" style="background:#7e22ce;border-color:#c084fc;color:#fff;padding:5px 9px;">
+        ⚡ Invoke Live Gemini ADK
+      </button>
+      <span id="lbl-gemini-status" style="font-size:0.66rem;color:#c084fc;font-weight:700;">[Mode: Local Bandit]</span>
+    </div>
+  </div>
+
+  <main class="main-grid">
+
+    <!-- LEFT SIDEBAR: Token Economy Profiler + Google ADK Agent Roster + Tool-Call Stream -->
+    <aside class="panel">
+
+      <!-- Token Economy & LLM Call Profiler -->
+      <div class="token-economy-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:0.72rem;font-weight:700;color:#e9d5ff;text-transform:uppercase;">
+            📊 ADK Token Economy Profiler
+          </span>
+          <select id="sel-cadence" class="cadence-select" title="How often ADK LLM Agents wake up">
+            <option value="5">Cadence: Every 5 Rnds</option>
+            <option value="10" selected>Cadence: Every 10 Rnds</option>
+            <option value="20">Cadence: Every 20 Rnds</option>
+            <option value="EVENT_ONLY">Event-Driven Only</option>
+          </select>
+        </div>
+
+        <div class="token-grid">
+          <div class="token-stat">
+            <div class="token-stat-label">Option C ADK Calls</div>
+            <div id="tok-calls" class="token-stat-val" style="color:#6ee7b7;">1 calls</div>
+          </div>
+          <div class="token-stat">
+            <div class="token-stat-label">Total ADK Tokens</div>
+            <div id="tok-total" class="token-stat-val" style="color:#38bdf8;">435 tok</div>
+          </div>
+          <div class="token-stat" style="grid-column:1 / -1;">
+            <div class="token-stat-label">Est. API Cost (Gemini 3.8 Flash vs. Frontier)</div>
+            <div id="tok-cost-flash" class="token-stat-val" style="color:#facc15;font-size:0.72rem;">
+              $0.0001 (3.8-Flash) / $0.001 (Frontier)
+            </div>
+          </div>
+          <div class="token-stat" style="grid-column:1 / -1;">
+            <div class="token-stat-label">If Naive 800-Sensor LLM Swarm (Option A)</div>
+            <div id="tok-naive-compare" class="token-stat-val" style="color:#fda4af;font-size:0.7rem;">
+              0 calls (0 tok = $0.00)
+            </div>
+          </div>
+        </div>
+
+        <div id="tok-savings-badge" class="savings-bar">
+          ⚡ Option C Hybrid saves 99.85% tokens vs. 800-LLM Swarm
+        </div>
+        <div id="tok-live-proof" style="font-size:0.65rem;color:#94a3b8;font-family:monospace;text-align:center;">
+          Live Gemini API Calls: 0 (Paste API key above to activate)
+        </div>
+      </div>
+
+      <!-- Amazon Rainforest ADK Sector Agents -->
+      <div class="panel-header">
+        <span class="panel-title">CanopyPulse ADK Agent Roster</span>
+        <span style="font-size:0.64rem;color:#94a3b8;">5 LlmAgents + 800 Micro</span>
+      </div>
+
+      <div class="agent-roster">
+        <div class="agent-card">
+          <div class="agent-card-top">
+            <span>Tier 1 · TileAgent_T1 (Terra Firme NW)</span>
+            <span id="t1-phase" class="agent-phase">Phase I</span>
+          </div>
+          <div id="t1-params" class="agent-params">r=4.0 | min_Δ=5 | min_E=450</div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-card-top">
+            <span>Tier 1 · TileAgent_T2 (Várzea NE)</span>
+            <span id="t2-phase" class="agent-phase">Phase I</span>
+          </div>
+          <div id="t2-params" class="agent-params">r=4.0 | min_Δ=5 | min_E=450</div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-card-top">
+            <span>Tier 1 · TileAgent_T3 (Igapó SW)</span>
+            <span id="t3-phase" class="agent-phase">Phase I</span>
+          </div>
+          <div id="t3-params" class="agent-params">r=4.0 | min_Δ=5 | min_E=450</div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-card-top">
+            <span>Tier 1 · TileAgent_T4 (Cloud Ridge SE)</span>
+            <span id="t4-phase" class="agent-phase">Phase I</span>
+          </div>
+          <div id="t4-params" class="agent-params">r=4.0 | min_Δ=5 | min_E=450</div>
+        </div>
+      </div>
+
+      <div class="panel-header">
+        <span class="panel-title">Live Agent Negotiation &amp; Tool Stream</span>
+        <span style="font-size:0.63rem;color:#c084fc;">Tokens / Call</span>
+      </div>
+      <div id="adk-console" class="adk-console"></div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.7rem;gap:8px;">
+        <span>Canopy Motes/Sector: <strong id="val-nodes" style="color:#6ee7b7;">180</strong></span>
+        <input id="ctrl-nodes" type="range" min="100" max="240" step="20" value="180" style="width:90px;" />
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;">
+          <input id="chk-chaos-agent" type="checkbox" checked />
+          <span>Auto Fire/Storm</span>
+        </label>
+      </div>
+    </aside>
+
+    <!-- CENTER ARENA: Dual Amazon Canopy Canvases + Live KPIs -->
+    <section class="arena-container">
+
+      <div class="canvases-grid">
+        <div class="sim-card">
+          <div class="sim-card-header">
+            <div class="sim-card-title">
+              <span class="dot" style="background:#10b981;box-shadow:0 0 6px #10b981;"></span>
+              SimC: CanopyPulse ADK Agentic Mesh
+            </div>
+            <span class="badge-adk">Autonomous Per-Sector (r_i, l_i) + Thought Callouts</span>
+          </div>
+          <div class="canvas-wrapper">
+            <canvas id="canvas-simc"></canvas>
+          </div>
+        </div>
+
+        <div class="sim-card">
+          <div class="sim-card-header">
+            <div class="sim-card-title">
+              <span class="dot" style="background:#38bdf8;box-shadow:0 0 6px #38bdf8;"></span>
+              SimA: 2012 Fixed-Slider DDS + LCAC
+            </div>
+            <span class="badge-adk" style="color:#93c5fd;border-color:#3b82f6;background:rgba(59,130,246,0.15);">Locked r=4.0, l=5 Across Canopy</span>
+          </div>
+          <div class="canvas-wrapper">
+            <canvas id="canvas-sima"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend-bar">
+        <span class="legend-item"><span class="dot" style="background:#facc15;"></span> Yellow: Canopy Mote (Micro-Agent)</span>
+        <span class="legend-item"><span class="dot" style="background:#38bdf8;"></span> Cyan: Dominant Relay</span>
+        <span class="legend-item"><span class="dot" style="background:#fb923c;"></span> Orange: TileAgent Hub</span>
+        <span class="legend-item"><span class="dot" style="background:#10b981;"></span> Emerald: GlobalSink Satellite Tower</span>
+        <span class="legend-item"><span class="dot" style="background:#c084fc;"></span> Violet Beam: ADK Directive / Bridge</span>
+        <span class="legend-item"><span class="dot" style="background:#f43f5e;"></span> Orange/Red Plume: Canopy Wildfire</span>
+      </div>
+
+      <div class="kpi-strip">
+        <div class="kpi-box">
+          <div class="kpi-label">CONVERGECAST ROUND</div>
+          <div id="kpi-round" class="kpi-value" style="color:#fff;">0</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">AVG BATTERY (SimC ADK vs SimA Fixed)</div>
+          <div id="kpi-energy" class="kpi-value" style="color:#10b981;">1000 vs 1000 u</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">CONNECTED MOTES (SimC vs SimA)</div>
+          <div id="kpi-alive" class="kpi-value" style="color:#6ee7b7;">720 vs 720</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">CANOPY PAYLOADS DELIVERED</div>
+          <div id="kpi-payloads" class="kpi-value" style="color:#38bdf8;">0 vs 0</div>
+        </div>
+      </div>
+
+      <div id="status-banner" class="status-banner">
+        Click any Mission Commander intent button at the top, click directly on the left rainforest map to ignite a canopy fire, or click "▶ RUN ADK SWARM"!
+      </div>
+    </section>
+
+    <!-- RIGHT SIDEBAR: 4 Live Comparison Charts -->
+    <aside class="panel charts-sidebar">
+      <div class="panel-header">
+        <span class="panel-title">CanopyPulse Performance</span>
+        <div style="font-size:0.67rem;display:flex;gap:8px;">
+          <span style="color:#10b981;font-weight:700;">■ SimC (ADK)</span>
+          <span style="color:#38bdf8;font-weight:700;">■ SimA (Fixed)</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span>(a) Average Residual Energy (Units)</span>
+        </div>
+        <canvas id="chart-energy" class="chart-canvas"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span>(b) Connected Canopy Motes Alive</span>
+        </div>
+        <canvas id="chart-alive" class="chart-canvas"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span>(c) Dynamic UDG Radius r_i(t) vs Fixed r=4</span>
+        </div>
+        <canvas id="chart-radius" class="chart-canvas"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <span>(d) Cumulative Canopy Payloads Delivered</span>
+        </div>
+        <canvas id="chart-payloads" class="chart-canvas"></canvas>
+      </div>
+    </aside>
+
+  </main>
+
+  <script src="agentic-engine.js?v=live3"></script>
+  <script src="app.js?v=live3"></script>
+</body>
+</html>
