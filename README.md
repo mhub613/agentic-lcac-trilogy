@@ -27,11 +27,27 @@ This repository provides the complete open-source implementation and modernizati
 
 ---
 
+## 📄 Full Research Paper (14-Year Retrospective)
+
+The complete mathematical formulations, proofs, and empirical benchmark tables are published directly in this repository:
+
+👉 **[Read the Full Retrospective Research Paper (`PAPER_2026_RETROSPECTIVE.md`)](./PAPER_2026_RETROSPECTIVE.md)**
+
+**Paper Highlights:**
+- **Smart Cross-Tile Routing (`DDS-XR`):** Formal definition, Proposition 1 complexity preservation ($O(N^2)$ election, $O(N)$ convergecast), and elimination of 100% of border orphan nodes.
+- **Velocity-Aware Dynamic Dominating Set (`DDS-M`):** Relative neighborhood stability metric ($S_v$) for mobile and aerial meshes.
+- **Physical SINR Interference & ESP32 Firmware:** Over-the-air 8-byte ESP-NOW MAC frames resolving dual semaphores in $<3\text{ ms}$.
+- **Token Economy & Granularity Analysis:** Why a 3-tier hybrid neuro-symbolic swarm saves 99.95% of LLM compute while boosting throughput by +30.8%.
+
+---
+
 ## Repository Structure
 
 ```text
 agentic-lcac-trilogy/
 ├── README.md                                  # Repository overview, architecture, & quickstart
+├── PAPER_2026_RETROSPECTIVE.md                # Complete 14-year retrospective research paper
+├── images/                                    # High-resolution simulation interface views
 ├── .gitignore                                 # Clean git ignore for Python, keys, and builds
 ├── .env.example                               # Environment template for Gemini API key
 ├── web-simulator/                             # Sim-A: 2012 NetLogo Benchmark Simulator
